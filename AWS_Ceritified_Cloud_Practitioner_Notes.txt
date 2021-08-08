@@ -279,17 +279,6 @@ These are referred to as key value pairs. You have your key, such as name and th
 	4. Security groups are virtual firewalls. To let everything in 0.0.0.0/0. To let a single IP address in X.X.X.X/32 (32 means this ip address)
 	5. Always design for failure. Have one EC2 instance in each availability zone.
 
-*Using the command line
-	[root@ip-172-31-80-252 ec2-user]# aws s3 mb s3://acloudsri
-	make_bucket failed: s3://acloudsri Unable to locate credentials
-	[root@ip-172-31-80-252 ec2-user]# aws configure
-	AWS Access Key ID [None]:  
-
-	aws s3 mb s3://acloudsri
-
-	cd ~/.aws
-   	rm credentials
-
 *Using the command line: Exam Tips:
 	1. You can interact with AWS in 3 different ways
 		a. Using the console
