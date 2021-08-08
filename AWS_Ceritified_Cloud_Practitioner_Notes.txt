@@ -2,7 +2,7 @@ Disclaimer:
 ------------
 The information has been taken from the content in https://acloudguru.com/
 I highly recommend you to purchase the course from https://acloudguru.com/
-This is to help with revision for students preparing for the certification.
+The purpose of this notes s to help students with revision for certification.
 
 
 AWS Certified Cloud Practitioner
