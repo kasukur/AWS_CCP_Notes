@@ -2,7 +2,7 @@ Disclaimer:
 ------------
 The information has been taken from the content in https://acloudguru.com/
 I highly recommend you to purchase the course from https://acloudguru.com/
-The purpose of this notes s to help students with revision for certification.
+The purpose of these notes is to help students with their revision prior to taking the certification.
 
 
 AWS Certified Cloud Practitioner
