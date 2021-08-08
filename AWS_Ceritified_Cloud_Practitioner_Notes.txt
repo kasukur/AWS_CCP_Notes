@@ -1,3 +1,9 @@
+Disclaimer:
+------------
+I made this notes from https://acloudguru.com/
+I highly recommend you to purchase the course from https://acloudguru.com/
+
+
 AWS Certified Cloud Practitioner
 =================================
  
