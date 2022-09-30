@@ -9,4 +9,4 @@ The information has been taken from various sources during my preperation
 5. AWS Exam Readiness - Live and Recorded 
 
 
-https://github.com/kasukur/AWS_CCP_Notes/blob/main/AWS_Solution_Architect_Professional/images/WorkingStorageFormula-diagram.png
+![WorkingStorageFormula-diagram.png](images/WorkingStorageFormula-diagram.png)
