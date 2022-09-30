@@ -1,0 +1,413 @@
+Disclaimer:
+------------
+The information has been taken from various sources during my preperation
+1. https://learn.cantrill.io/
+2. https://www.udemy.com/course/practice-exam-aws-certified-solutions-architect-professional/
+3. https://www.udemy.com/course/aws-certified-solutions-architect-professional-training/
+3. AWS Skill Builder - Advanced Architecting Course
+4. AWS Documentation
+5. AWS Exam Readiness - Live and Recorded 
+
+=-------------------------------------------=
+= AWS Solution Architect Professional Notes =
+=-------------------------------------------=
+
+Managing local disks for your Storage Gateway
+
+We strongly recommend that you allocate at least 150 GiB of upload buffer space if either of the following is true:
+* Your incoming rate is higher than the outgoing rate.
+* The formula returns a value less than 150 GiB.
+
+Determining the size of upload buffer to allocate
+￼
+For example, assume that your business applications write text data to your gateway at a rate of 40 MB per second for 12 hours per day and your network throughput is 12 MB per second. Assuming a compression factor of 2:1 for the text data, you would allocate approximately 690 GiB of space for the upload buffer.
+((40 MB/sec) - (12 MB/sec * 2)) * (12 hours * 3600 seconds/hour) = 691200 megabytes
+
+Determining the size of cache storage to allocate
+- you size the cache storage at 1.1 times the upload buffer size.
+
+Important
+- When adding cache or upload buffer to an existing gateway, you must create new disks on the gateway host hypervisor or Amazon EC2 instance. Do not remove or change the size of existing disks that have already been allocated as cache or upload buffer.
+
+How to calculate number of days for the data transfer:
+- [ ] The given use-case requires transferring 200 TB of archived data within the shortest possible duration. Now, the IPSec based AWS VPN connection assures a speed of 1 Gbps (Gigabits per second). As 1 Byte = 8 bits, therefore you can transfer 0.125 GBps (Gigabytes per second).
+       So the hourly data transfer is 0.1256060 = 450 GB or approximately 0.45 TB.
+       So the approximate daily data transfer is 0.45 * 24 = ~ 10 TB
+       Therefore, the entire archived dataset of 200 TB can be transferred in 20 days.
+
+When you need to calculate the time to transfer from on premises to AWS use this:
+10 Mbps internet speed can transfer you approximately 100 GB/day.
+* Multiply the number by 10 = 100
+* M becomes G (the next bigger prefix)
+* bit becomes Byte
+This is much easier although not 100% precise, but the exam will always give you a period with enough difference so you don't need the exact transfer amount. 
+
+Another Example: 1,2 Gbps direct connect can transfer you 12TB, 21TB daily
+
+Another Example:
+
+The given use-case requires transferring 140 TB of archived data within a duration of approximately two days (48 hours). Now, the Direct Connect connection assures a speed of 10Gbps (Gigabits per second) as it is minimally used. As 1 Byte = 8 bits, therefore you can transfer approximately 1GBps (Gigabytes per second).
+So the hourly data transfer is 1 * 60 * 60 = 3,600 GB or approximately 3.6 TB.
+So the approximate daily data transfer is 3.6 * 24 = ~ 86 TB
+Therefore, the entire archived dataset of 140 TB can be transferred in less than two days (48 hours)
+
+
+- [ ] Compute Savings plan for multiple regions
+    - [ ] Compute Savings Plans provide the most flexibility and help to reduce your costs by up to 66 percent. These plans automatically apply to EC2 instance usage regardless of instance family, size, Availability Zone, Region, OS or tenancy, and also apply to Fargate and Lambda usage. For example, with Compute Savings Plans, you can change from C4 to M5 instances, shift a workload from EU (Ireland) to EU (London), or move a workload from EC2 to Fargate or Lambda at any time and automatically continue to pay the Savings Plans price.
+- [ ] EC2 instance Savings plan for a single region
+    - [ ] EC2 Instance Savings Plans provide the lowest prices, offering savings up to 72 percent in exchange for commitment to usage of individual instance families in a region (for example, M5 usage in N. Virginia). This automatically reduces your cost on the selected instance family in that Region regardless of Availability Zone, size, OS or tenancy. EC2 Instance Savings Plans give you the flexibility to change your usage between instances within a family in that Region. For example, you can move from c5.xlarge running Windows to c5.2xlarge running Linux and automatically benefit from the Savings Plans prices.
+- [ ] Trusted Advisor
+    - [ ] RDS Idle DB instances check
+    - [ ] Redshift clusters check
+    - [ ] Load Balancers check 
+- [ ] Amazon RDS: The maximum baseline performance is the same for volumes that are 5.34 TiB or greater.
+- [ ] Baseline I/O performance for General Purpose SSD storage is 3 IOPS for each GiB, with a minimum of 100 IOPS. This relationship means that larger volumes have better performance. For example, baseline performance for a 100-GiB volume is 300 IOPS. Baseline performance for a 1-TiB volume is 3,000 IOPS. Maximum baseline performance for a gp2 volume (5.34 TiB and greater) is 16,000 IOPS.
+- [ ] For gp2 volumes larger than 1 TiB, the baseline performance is greater than the burst performance. For such volumes, burst is often irrelevant because the baseline performance is better than the 3,000 IOPS burst performance. However, for DB instances larger than 1 TiB where the storage is striped across four Amazon EBS volumes, burst performance of up to 12,000 IOPS can be seen. This applies to RDS database engines other than Microsoft SQL Server, which doesn't support volume striping.
+- [ ] Get started by creating AWS Cost Anomaly Detection via AWS Cost Explorer API, or directly in the Cost Management console. Once you set up your monitor and alert preference, AWS will notify you with individual alerts, or a daily or weekly summary via Amazon SNS or emails. You can also monitor and do your own anomaly analysis in AWS Cost Explorer.
+                     		         (Credit balance)
+- [ ]    Burst duration =  --------------------------------------
+                    		(Burst IOPS) - 3*(Storage size in GiB)
+- [ ] For SQL Server, the maximum 64,000 IOPS is guaranteed only on Nitro-based instances that are on the m5*, m6i, r5*, r6i, and z1d instance types. Other instance types guarantee performance up to 32,000 IOPS.
+- [ ] For Oracle, you can provision the maximum 256,000 IOPS only on the r5b instance type.
+- [ ] Both Amazon Redshift and Amazon RDS support reserved instances.
+- [ ] Use the Trusted Advisor Amazon RDS Idle DB instances check to identify DB instances that have not had any connection over the last 7 days. For Amazon Redshift, use the Trusted Advisor Underutilized Redshift clusters check to identify clusters that have had no connections for the last 7 days and less than 5 percent cluster-wide average CPU utilization for 99 percent of the last 7 days.
+- [ ] Lazy loading allows for stale data but doesn't fail with empty nodes. Write-through ensures that data is always fresh, but can fail with empty nodes and can populate the cache with superfluous data. By adding a time to live (TTL) value to each write, you can have the advantages of each strategy. At the same time, you can and largely avoid cluttering up the cache with extra data.
+- [ ] AWS Shield protects Route 53, Cloudfront and Global Accelerator
+- [ ] AWS Shield Advanced protects Route 53, CF and GA plus EIP’s, ALBs, CLBs, NLBs + WAF Integration + Health-based detection + Real-time visibility.
+- [ ] Not automatic - must be explicitly enabled in Shield Advanced or AWS Firewall Manager Shield Advanced Policy.
+- [ ] AWS Shield Advanced provides Cost protections and proactive engagement and AWS Shield Response Team.
+- [ ] Your Amazon Redshift cluster must be in the same account and same AWS Region as the replication instance
+	When you migrate to Amazon Redshift, AWS DMS first moves the data to an Amazon Simple Storage Service (Amazon S3) bucket. Then, the data is transferred 	to the tables in the target Amazon Redshift cluster. This S3 bucket is created in the same AWS Region as Amazon Redshift database. For this reason, your 		Amazon Redshift cluster must be in the same account and same AWS Region as the replication instance.
+- [ ] Amazon Kinesis Data Streams (KDS) is a massively scalable, highly durable data ingestion and processing service optimized for streaming data. Amazon Kinesis Data Streams is integrated with many AWS services, including Amazon Kinesis Data Firehose for near real-time transformation.
+       Kinesis Data Streams cannot directly write the output to S3. In addition, KDS does not offer plug-and-play integration with an intermediary Lambda function as       	Firehose does. You will need to do a lot of custom coding to get the Lambda function to process the incoming stream and then reliably dump the transformed 	output to S3.
+- [ ] Amazon Kinesis Data Firehose is the easiest way to load streaming data into data stores and analytics tools. It can capture, transform, and load streaming data into Amazon S3, Amazon Redshift, Amazon Elasticsearch Service, and Splunk, enabling near real-time analytics with existing business intelligence tools and dashboards you’re already using today. It is a fully managed service that automatically scales to match the throughput of your data and requires no ongoing administration. It can also batch, compress, and encrypt the data before loading it, minimizing the amount of storage used at the destination and increasing security.
+- [ ] ECS: The bridge network mode is only supported for Amazon ECS tasks hosted on Amazon EC2 instances. It is not supported when using Amazon ECS on Fargate.
+- [ ] An ALB does not support an Elastic IP.
+- [ ] Global Accelerator will not be a cost-effective choice when compared to a Network Load Balancer.
+- [ ] DAX costs more than SQS
+- [ ] Route 53:
+    - [ ] Records without a health check are always considered healthy. If no record is healthy, all records are deemed to be healthy
+    - [ ] If you're creating failover records in a private hosted zone, you must assign a public IP address to an instance in the VPC to check the health of an endpoint within a VPC by IP address
+    - [ ] If you're routing traffic to any AWS resources that you can create alias records for, don't create health checks for those resources. When you create the alias records, you set Evaluate Target Health to Yes instead.
+    - [ ] All the records with non-zero weights must be unhealthy before Route 53 starts to respond to DNS queries using records that have weights of zero.
+    - [ ] In active-active failover, all the records that have the same name, the same type, and the same routing policy are active unless Route 53 considers them unhealthy. Route 53 can respond to a DNS query using any healthy record.
+    - [ ] In active-passive failover, when responding to queries, Route 53 includes only the healthy primary resources. If all the primary resources are unhealthy, Route 53 begins to include only the healthy secondary resources in response to DNS queries.
+- [ ] Gateway Load Balancer: Custom routing accelerators support only VPC subnet endpoints, each containing one or more EC2 instances that are running your application. Each VPC subnet endpoint, which could be in a single or multiple Regions, contains the IP addresses of the EC2 instances that host your application. With a custom routing accelerator, you can put your accelerator in front of up to thousands of EC2 instances running in a single or multiple VPCs. Custom routing accelerators support VPC subnet endpoints with a maximum size of /17 and route traffic only to EC2 instances within each subnet.
+- [ ] AWS Lambda doesn't have service-linked roles
+- [ ] For the given use case, you can configure the Lambda functions in the centralized account to have their execution role allow the function to assume an IAM role in the other AWS accounts via an inline policy. Then you need to modify your cross-account IAM role's trust policy to allow your Lambda function's execution role to assume the role. A Lambda function can assume an IAM role in another AWS account to do either of the following: Access resources — such as accessing an Amazon Simple Storage Service (Amazon S3) bucket. Do tasks — such as starting and stopping EC2 instances.
+- [ ] The AWS Transfer Family provides fully managed support for file transfers directly into and out of Amazon S3. Therefore, it cannot support migration into the other AWS storage services mentioned in the given use-case (such as EFS and Amazon FSx for Windows File Server).
+- [ ] It is important to note that Kinesis Data Analytics (KDA) only supports the following streaming sources for an application:
+    - [ ] A Kinesis data stream (KDS)
+    - [ ] A Kinesis Data Firehose (KDF) delivery stream
+Therefore, you cannot directly write the output of the records from a Lambda function to KDA, although you can certainly use a Lambda function to pre-process the incoming stream from either KDS or KDF.
+
+- [ ] You can't directly copy data from Snowball Edge devices into AWS Glacier.
+- [ ] Snowmobile can import data into S3 or S3 Glacier
+- [ ] AWS recommends that you should use Snowmobile to migrate large datasets of 10PB or more in a single location. For datasets less than 10PB or distributed in multiple locations, you should use Snowball.
+- [ ] DynamoDB maximum item size of 400 KB
+DynamoDB read requests can be either strongly consistent, eventually consistent, or transactional.
+    * A strongly consistent read request of an item up to 4 KB requires one read request unit.
+    * An eventually consistent read request of an item up to 4 KB requires one-half read request unit.
+    * A transactional read request of an item up to 4 KB requires two read request units.
+If you need to read an item that is larger than 4 KB, DynamoDB needs additional read request units. The total number of read request units required depends on the item size, and whether you want an eventually consistent or strongly consistent read. For example, if your item size is 8 KB, you require 2 read request units to sustain one strongly consistent read, 1 read request unit if you choose eventually consistent reads, or 4 read request units for a transactional read request.
+
+	One write request unit represents one write for an item up to 1 KB in size. If you need to write an item that is larger than 1 KB, DynamoDB needs to consume additional write request units. Transactional write requests require 2 write request units to perform one write for items up to 1 KB. The total number of write request units required depends on the item size. For example, if your item size is 2 KB, you require 2 write request units to sustain one write request or 4 write request units for a transactional write request.
+
+For example, suppose that you create a provisioned table with 6 read capacity units and 6 write capacity units. With these settings, your application could do the following:
+    * Perform strongly consistent reads of up to 24 KB per second (4 KB × 6 read capacity units).
+    * Perform eventually consistent reads of up to 48 KB per second (twice as much read throughput).
+    * Perform transactional read requests of up to 12 KB per second.
+    * Write up to 6 KB per second (1 KB × 6 write capacity units).
+    * Perform transactional write requests of up to 3 KB per second.
+
+- [ ] What’s the Source IP address the App sees?
+    - [ ] ALB: CLB and ALB uses private IP of LB’s ENI as source address. Note: X-forwarded-for can be used with ALB to capture client IP 
+    - [ ] NLB: Instance specified by Instance ID - IP of the Client
+    - [ ] NLB: Instance specified by IP Address - IP of NLB (TCP and TLS only). For UDP and TCP_UDP - the IP will be Client’s IP.
+    - [ ] When using an NLB with a VPC Endpoint or AWS GA source IPs are private IPs of NLB nodes 
+- [ ] Amazon Kinesis Data Firehose is a fully managed service for delivering real-time streaming data to destinations such as Amazon Simple Storage Service (Amazon S3), Amazon Redshift, Amazon OpenSearch Service, Splunk, and any custom HTTP endpoint or HTTP endpoints owned by supported third-party service providers, including Datadog, Dynatrace, LogicMonitor, MongoDB, New Relic, and Sumo Logic.
+       Firehose cannot directly write into a DynamoDB table, so this option is incorrect.
+* A single shard can ingest up to 1 MB of data per second (including partition keys) or 1,000 records per second for writes. Similarly, if you scale your stream to 5,000 shards, the stream can ingest up to 5 GB per second or 5 million records per second. If you need more ingest capacity, you can easily scale up the number of shards in the stream using the AWS Management Console or the UpdateShardCount API.
+* Each shard can support up to five read transactions per second. Each read transaction can provide up to 10,000 records with an upper quota of 10 MB per transaction.
+* Each shard can support up to a maximum total data read rate of 2 MB per second via GetRecords. If a call to GetRecords returns 10 MB, subsequent calls made within the next 5 seconds throw an exception.
+
+Maximum ratio of provisioned IOPS to requested volume size
+- [ ] The maximum ratio of provisioned IOPS to requested volume size (in GiB) is 50:1 for io1 volumes and 500:1 for io2 volumes.
+    - [ ] For example, a 100-GiB io1 volume can be provisioned with up to 5,000 IOPS, while a 100-GiB io2 volume can be provisioned with up to 50,000 IOPS
+- [ ] On a supported instance type, io1 volumes require a 10-times greater volume size to allow provisioning up to the 64,000 IOPS maximum.
+* io1 volume of 1,280 GiB in size or greater for maximum IOPS (50 × 1,280 GiB = 64,000 IOPS).
+* io2 volume of 128 GiB in size or greater for maximum IOPS (500 × 128 GiB = 64,000 IOPS).
+- [ ] Amazon WorkDocs Content Manager is a high-level utility tool that uploads content or downloads it from an Amazon WorkDocs site. It can be used for both administrative and user applications. For user applications, a developer must construct the Amazon WorkDocs Content Manager with anonymous AWS credentials and an authentication token. For administrative applications, the Amazon WorkDocs client must be initialised with AWS Identity and Access Management (IAM) credentials. In addition, the authentication token must be omitted in subsequent API calls.
+
+- [ ] Users in your self-managed Active Directory (AD) can also have SSO access to AWS accounts and cloud applications in the AWS SSO user portal. To do that, AWS Directory Service has the following two options available:
+    - [ ] Create a two-way trust relationship – When two-way trust relationships are created between AWS Managed Microsoft AD and a self-managed AD, users in your self-managed AD can sign in with their corporate credentials to various AWS services and business applications. One-way trusts do not work with AWS SSO.
+    - [ ] Create an AD Connector – AD Connector is a directory gateway that can redirect directory requests to your self-managed AD without caching any information in the cloud.
+
+
+- [ ] Although CloudFront does provide caching and security settings for the origin, it does not block DDoS attacks to your instances or NLBs. AWS Shield Advanced offers integration with NACLs that will block traffic at the edge of the AWS Network.
+- [ ] Sharding a database is not entirely supported in RDS. You should use Read Replicas instead.
+- [ ] With manual WLM, Amazon Redshift configures one queue with a concurrency level of five, which enables up to five queries to run concurrently, plus one predefined Superuser queue, with a concurrency level of one. You can define up to eight queues. Each queue can be configured with a maximum concurrency level of 50. The maximum total concurrency level for all user-defined queues (not including the Superuser queue) is 50.
+- [ ] You cannot set EFS as the origin of your CloudFront web distribution
+- [ ] Amazon Connect uses the following services for ML/AI:
+    - [ ] 	Amazon Lex—Lets you create a chatbot to use as Interactive Voice Response (IVR).
+    - [ ] 	Amazon Polly—Provides text-to-speech in all contact flows.
+    - [ ] 	Amazon Transcribe—Grabs conversation recordings from Amazon S3, and transcribes them to text so you can review them.
+    - [ ] 	Amazon Comprehend—Takes the transcription of recordings, and applies speech analytics machine learning to the call to identify sentiment, keywords, adherence to company policies, and more.
+
+- [ ] You cannot set Auto Scaling for the master database on Amazon Aurora. You can only manually resize the instance size of the master node.
+- [ ] Amazon EFS can provide very low and consistent operational latency as well as a throughput scale of 10+GB per second.
+- [ ] An SQS queue cannot be used as a direct input for an AWS Step Function workflow.
+
+Redis does not totally support a multithreaded architecture and in addition, it also does not have an Auto Discovery feature, unlike Memcached.
+Moreover, the ability to enable the client programs to automatically identify all of the nodes in a cache cluster can be met by using the Auto Discovery feature of Amazon ElastiCache for Memcached.
+
+You can choose Memcached over Redis if you have the following requirements:
+– You need the simplest model possible.
+– You need to run large nodes with multiple cores or threads.
+– You need the ability to scale out and in, adding and removing nodes as demand on your system increases and decreases.
+– You need to cache objects, such as a database.
+
+- [ ] Amazon EFS is designed to provide the throughput, IOPS, and low latency needed for a broad range of workloads. With Amazon EFS, you can choose from two performance modes and two throughput modes:
+	– The default General Purpose performance mode is ideal for latency-sensitive use cases, like web serving environments, content management systems, home directories, and general file serving. File systems in the Max I/O mode can scale to higher levels of aggregate throughput and operations per second with a tradeoff of slightly higher latencies for file metadata operations.
+	– Using the default Bursting Throughput mode, throughput scales as your file system grows. Using Provisioned Throughput mode, you can specify the throughput of your file system independent of the amount of data stored.
+
+With Bursting Throughput mode, throughput on Amazon EFS scales as the size of your file system in the standard storage class grows. With Provisioned Throughput mode, you can instantly provision the throughput of your file system (in MiB/s) independent of the amount of data stored.
+
+If your file system is in the Provisioned Throughput mode, you can increase the Provisioned Throughput of your file system as often as you want. You can decrease your file system throughput in Provisioned Throughput mode as long as it’s been more than 24 hours since the last decrease.
+
+- [ ] The certificate issuer you must use depends on whether you want to require HTTPS between viewers and CloudFront or between CloudFront and your origin:
+	HTTPS between viewers and CloudFront
+		– You can use a certificate that was issued by a trusted certificate authority (CA) such as Comodo, DigiCert, Symantec or other third-party providers.
+		– You can use a certificate provided by AWS Certificate Manager (ACM)
+	HTTPS between CloudFront and a custom origin
+		– If the origin is not an ELB load balancer, such as Amazon EC2, the certificate must be issued by a trusted CA such as Comodo, DigiCert, Symantec or other third-party providers.
+		– If your origin is an ELB load balancer, you can also use a certificate provided by ACM.
+
+- [ ] If your origin is an Elastic Load Balancing load balancer, you can use a certificate provided by AWS Certificate Manager (ACM). You can also use a certificate that is signed by a trusted third-party certificate authority and imported into ACM. Note that you can’t use a self-signed certificate for HTTPS communication between CloudFront and your origin.
+- [ ] Although you can use AWS Config to determine if your resources have tags or not, it does not have the capability to immediately add the corresponding tags to your resources across multiple AWS accounts by default. You usually issue the TagResource AWS Config API action to tag a resource in your current AWS account and not for multiple accounts. AWS Config supports Multi-Account Multi-Region Data Aggregation but you have to manually create an Aggregator.
+- [ ] You cannot automatically add tags to your provisioned resources using AWS Systems Manager Automation.
+- [ ] Data Pipeline service does not support data streams unlike Kinesis, and replicating your DynamoDB tables into another region
+- [ ] AWS Storage Gateway offers file-based file gateways (Amazon S3 File and Amazon FSx File), volume-based (Cached and Stored), and tape-based storage solutions.
+- [ ] Gateway-Cached volumes can support volumes of 1024 TB (32 * 32GB) in size, whereas Gateway-Stored volume supports volumes of 512 TB (16 * 32GB) size.
+- [ ] Remember that only one virtual private gateway (VGW) can be attached to a VPC at a time.
+- [ ] A Site-to-Site VPN connection offers two VPN tunnels between a virtual private gateway or a transit gateway on the AWS side, and a customer gateway (which represents a VPN device) on the remote (on-premises) side. A virtual private gateway is the VPN concentrator on the Amazon side of the Site-to-Site VPN connection. You create a virtual private gateway and attach it to the VPC from which you want to create the Site-to-Site VPN connection.
+- [ ] Network Load Balancers do not have associated security groups.
+- [ ] Amazon RDS does not support certain features in Oracle such as Multi-tenant Database, Real Application Clusters (RAC), Unified Auditing, Database Vault, and many more.
+- [ ] Route 53: 
+    - [ ] For EC2 instances, always use a Type A Record without an Alias. 
+    - [ ] For ELB, Cloudfront and S3, always use a Type A Record with an Alias and finally, 
+    - [ ] For RDS always use the CNAME Record with no Alias.
+- [ ] By default, the burst concurrency for Lambda functions is between 500-3000 requests per second (depending on region).
+- [ ] AWS SMS is primarily designed to migrate on-premises VMware vSphere, Microsoft Hyper-V/SCVMM, and Azure virtual machines to the AWS Cloud.
+- [ ] AWS Application Migration Service (AWS MGN) allows you to quickly lift-and-shift physical, virtual, or cloud servers to AWS. When you’re ready to migrate, it automatically converts and launches your servers on AWS.
+- [ ] Sharding a database is not entirely supported in RDS. 
+- [ ] Lambda@Edge can serve only up to 10,000 requests per second.
+- [ ] AWS WAF rules cannot protect a Network Load Balancer yet. It is better to use NACL rules to block the non-UDP traffic.
+- [ ] OpsWorks  • For chef / puppet stacks only 
+	• Can manage ELB and EC2 instances 
+	• Cannot manage an ASG 
+- [ ] SAM can use CodeDeploy to deploy Lambda functions (traffic shifting) 
+- [ ] AWS Batch – Multi Node Mode:
+	•	Does not work with Spot Instances 	
+	•	Works better if your EC2 launch mode is a placement group ”cluster” 
+- [ ] Amazon EMR – Instance Configuration 
+	• Uniform instance groups: select a single instance type and purchasing option for each node (has auto scaling) 
+	• Instance fleet: select target capacity, mix instance types and purchasing options (no Auto Scaling) 
+- [ ] RDS - IAM authentication only for MySQL and PostgreSQL
+- [ ] RDS - CloudTrail cannot be used to track queries made within RDS 
+- [ ] Oracle – Exam Tips 
+	Backups		• Use RDS Backups for backups & restore to Amazon RDS for Oracle 
+		• Use Oracle RMAN (Recovery Manager) for backups & restore to-non RDS (RDS not supported) 
+	Real Application Clusters (RAC) 
+		• RDS for Oracle does NOT support RAC 
+		• RAC is working on Oracle on EC2 Instances because you have full control 
+		• RDS for Oracle supports Transparent Data Encryption (TDE) to encrypt data before it’s written to storage 
+		• DMS works on Oracle RDS 
+- [ ] Kinesis Video Steams cannot output the stream data to S3 (must build custom solution) 
+
+RDS MySQL
+• You can use the native mysqldump to migrate a MySQL RDS DB to non-RDS 
+• The external MySQL database can run either on-premises in your data centre, or on an Amazon EC2 instance 
+- [ ] Step Functions does not integrate natively with AWS Mechanical Turk 
+- [ ] Step Functions is recommended to be used for new applications, except: 
+	• If you need external signals to intervene in the processes 
+	• If you need child processes that return values to parent processes 
+	• If you need to use Amazon MechanicalTurk 
+- [ ] Using ElastiCache involves heavy application code changes 
+- [ ] Amazon FSx for Lustre (Linux and Cluster) - Keyword Machine Learning, High Performance Computing (HPC)
+- [ ] Amazon FSx for Lustre - Seamless integration with S3• Can “read S3” as a file system (through FSx)• Can write the output of the computations back to S3 (through FSx) 
+- [ ] AWS DataSync - Sync from EFS to EFS
+- [ ] AWS Transfer Family – Endpoint Types (Exam Tip)
+    - [ ] Public Endpoint -	
+•	IPs managed by AWS (subject to change, use DNS names) 
+•	Can’t setup allow lists by source IP addresses 
+    - [ ] VPC Endpoint with Internal Access 
+•	Static private IPs •	Setup allow lists (SGs & NACLs) 
+    - [ ] VPC Endpoint with Internet-facing Access 
+•	Static private IPs 
+•	Static public IPs (EIPs) 
+•	Setup Security Groups 
+- [ ] EFS - Compatible with Linux based AMI (not Windows), POSIX-compliant 
+- [ ] API Gateway - 29 secs timeout and 10 MB max payload size
+- [ ] Route53 - Health Checks can be setup to pass / fail based on the text in the first 5120 bytes of the response 
+- [ ] You cannot set an ALIAS record for an EC2 DNS name 
+- [ ] CNAME: ONLY FOR NON ROOT DOMAIN (aka. something.mydomain.com) 
+- [ ] Alias: Works for ROOT DOMAIN and NON ROOT DOMAIN (aka mydomain.com) 
+- [ ] Except for Alias records, TTL is mandatory for each DNS record 
+- [ ] Transparent Data Encryption (TDE) for Oracle and SQL Server 
+- [ ] IAM authentication for MySQL and PostgreSQL
+- [ ] Savings Plans does not provide a capacity reservation. It is a commitment of a specific amount of $/hour and in exchange each hour you get the SP discounts.
+- [ ] Cognito Identity Pool allows Anonymous access
+- [ ] Amazon RDS allows to scale storage to 64 terabytes, 256K IOPS and 4K Mbps bandwidth.
+- [ ] Amazon RDS for Oracle doesn’t support sys user access, 3rd party application support and physical migration like transportable table space and RMAN restore. Alternatively host it on EC2 for these features.
+- [ ] TGW support ECMP (VGW doesn’t)
+- [ ] One important reason to keep your resources in other accounts is because Organizations service control policies (SCPs) do not work to restrict any users or roles in the management account.
+- [ ] KMS is all about encryption at rest (not encryption in transit)
+- [ ] DAX doesn’t support partitioning (DAX vs ElastiCache). ElastiCache is used when the Instance limits are reached. 
+- [ ] DAX is for DynamoDB, use ElastiCache for everything else.
+- [ ] You cannot set Auto Scaling for the master database on Amazon Aurora.
+- [ ] AWS WAF rules cannot protect a Network Load Balancer yet.
+- [ ] Sharding a database is not entirely supported in RDS.
+- [ ] You cannot use CloudFront for database caching.
+- [ ] An SQS queue cannot be used as a direct input for an AWS Step Function workflow.
+- [ ] Although AWS S3 supports strong read-after-write consistency, billions of objects will be overwritten on the S3 bucket every 15 minutes which could take longer to write than using Amazon EFS. Amazon EFS data is distributed across multiple Availability Zones, providing a high level of durability and availability.
+- [ ] Although you can use EBS Multi-Attach to attach EBS volumes to multiple EC2 instances, this is limited only to Provisioned IOPS SSD (io1 or io2) volumes that are attached to Nitro-based EC2 instances in the same Availability Zone.
+- [ ] AWS CodeDeploy is unnecessary as you will not deploy the changes in your production environment.
+- [ ] An ElastiCache Redis cluster provides varying levels of data durability, performance, and cost for implementing disaster recovery or fault tolerance of your cached data. You can choose the following options to improve the data durability of your ElastiCache cluster:
+	- Daily automatic backups	- Manual backups using Redis append-only file (AOF)	- Setting up a Multi-AZ with Automatic Failover
+- [ ] RDS is more expensive than using a DynamoDB 
+- [ ] Without enabling Multi-AZ, your RDS is not protected in the event of crash or failure. When you promote read-replicas to become master, a small downtime is required. 
+- [ ] Amazon Inspector service is just an automated security assessment service that helps improve the security and compliance of applications deployed on AWS. It does not have the capability to detect EC2 instances that are using unapproved AMIs, unlike AWS Config.
+- [ ] AWS Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for your virtual private cloud (VPC) that you created in Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect.
+      Once AWS Network Firewall is deployed, you will see a firewall endpoint in each firewall subnet. Firewall endpoint is similar to interface endpoint and it shows up as vpce-id in your VPC route table target selection. You have multiple deployment models for Network Firewall.
+For a centralised egress deployment model, an AWS Transit Gateway is a prerequisite. AWS Transit Gateway acts as a network hub and simplifies the connectivity between VPCs. For this model, we have a dedicated, central egress VPC which has a NAT gateway configured in a public subnet with access to IGW.
+Traffic originating from spoke VPCs is forwarded to inspection VPC for processing. It is then forwarded to central egress VPC using a default route in the Transit Gateway firewall route table. The default route is set to target central egress VPC Attachment (pointing to the AWS Network Firewall endpoint).
+- [ ] By default, the burst concurrency for Lambda functions is between 500-3000 requests per second (depending on region).
+- [ ] Lambda@Edge can serve only up to 10,000 requests per second.
+- [ ] Remember that in SSE-C, when you upload an object, Amazon S3 uses the encryption key you provide to apply AES-256 encryption to your data and removes the encryption key from memory. Amazon S3 does not store the encryption key you provide. Instead, they store a randomly salted HMAC value of the encryption key in order to validate future requests. The salted HMAC value cannot be used to derive the value of the encryption key or to decrypt the contents of the encrypted object. That means, if you lose the encryption key, you lose the object.
+- [ ] Using @connections to have the backend service connect back to the clients is not a feature of the GraphQL API when using AWS AppSync.
+- [ ] You cannot set up Direct Connect between different VPCs. AWS Direct Connect is primarily used to set up a dedicated connection between your on-premises data centre and your Amazon VPC.
+- [ ] You can also associate a Route 53 hosted zone with a VPC in another account • Authorise association with VPC in the second account. • Create an association in the second account 
+- [ ] NLB doesn’t have Security Groups
+- [ ] FIFO queues support up to 300 messages per second (300 send, receive, or delete operations per second). When you batch 10 messages per operation (maximum), FIFO queues can support up to 3,000 messages per second 
+- [ ] FIFO queues require the Message Group ID and Message Deduplication ID parameters to be added to messages 
+	Ø Message Group ID: 
+		Ø The tag that specifies that a message belongs to a specific message group Messages that belong to the same message group are guaranteed to be processed in a FIFO manner 
+	Ø Message Deduplication ID:		Ø The token used for deduplication of messages within the deduplication interval 
+- [ ] Kinesis Streams ordering is only maintained within a shard and not across all shards
+- [ ] Kinesis Streams is real-time and Kinesis Data Firehose is near real-time
+- [ ] AWS Application Discovery Service 
+    - [ ] Discovery Connector - VMWare
+    - [ ] Discovery Agent - HyperV, Physical 
+- [ ] Kinesis Data Streams is the only supported destination (for cross account and cross region for Cross-Account Log Data Sharing)
+- [ ] A CMK can encrypt data up to 4KB in size 
+- [ ] A CMK can generate, encrypt and decrypt Data Encryption Keys (DEKs) 
+- [ ] We can create an alias to a CNAME record only if the alias target is also a CNAME, otherwise we receive SERVFAIL/REFUSED RCODE error
+- [ ] We can’t create a CNAME on the parent or Apex domain.
+- [ ] IAM has 5K limit and can’t be changed, we need to use IDP.
+Networking
+- [ ] Direct Connect: 	  • VPC Endpoints can’t be accessed through Private VIF (you don’t need them) 
+- [ ] Transit Gateway 
+    * Only TGW - Supports IP Multicast (not supported by any other AWS service) 
+- [ ] Static Routes per Amazon VPC route table: 1000
+- [ ] Amazon VPC peering connections per Amazon VPC: 125
+- [ ] DHCP option sets are immutable, cannot edit once created
+- [ ] DHCP option sets can be associated with 0 or more VPC’s. Each VPC can have only one DHCP option set.
+- [ ] Associating a new DHCP option set Is immediate - but changes require a DHCP Renew which takes time
+- [ ] To use custom domains, you need to use custom DNS servers
+- [ ] VPN/VGW speed limit 1.25 Gbps. DX is 1, 10 or 100 Gbps
+- [ ] One DX GWY can connect to 3 Transit gateways using transit VIFs
+- [ ] TGW can be peered inter region. No Route propagation over peering attachments. So use static routes. 
+- [ ] TGW Data is encrypted in peered connections.
+- [ ] Use unique ASN’s for future route propagation with TGW peering
+- [ ] Public DNS => Private IP resolution is not supported over peers.
+- [ ] 50 peering attachments per TGW
+- [ ] Route table has a limit of 50 static routes or 100 propagated routes
+- [ ] Route Priority
+    - [ ] Route with the highest priority is matched (/32 wins ver /24 wins over /0)
+    - [ ] Static Routes
+    - [ ] Propagated Routes
+        - [ ] DX
+        - [ ] VPN Static
+        - [ ] VPN BGP
+        - [ ] AS_PATH
+- [ ] Subnet can have only one Route table and one route table can be associated to many subnets
+- [ ] Accelerate Site-to-Site VPN can be enabled when creating TGW VPN attachment. Not compatible with VPNs using a VGW. Cost: Fixed accelerator cost plus a transfer fee
+- [ ] Split tunnel is not default for Client VPN
+- [ ] Private VIF’s
+    - [ ] AWS will advertise the VPC CIDR and the BGP Peer IPs (/30’s)…
+    - [ ] Very Important: You can advertise default or specific corp prefixes for Private VIFs(max 100, hard limit). If we attempt more, the interface will enter an idle state.
+    - [ ] Can connect to VPC’s in the same region, DX GWY can overcomes this
+    - [ ] 1 Private VIF => 1 VGW => 1 VPC
+    - [ ] We configure ASN on the VIF (private ASN 64512 to 65535 or a public one) and AWS configures on VGW
+    - [ ] VGW has AWS ASN or you can configure one
+- [ ] Public VIF’s can access all regions.
+- [ ] DX Auto-negotiation disabled. Port speed and full-duplex manually set.
+- [ ] Optional MACsec and Bidirectional Forwarding Detection (BFD)
+- [ ] DX GWY is for VPC <=> On-Premises communications.
+- [ ] DX GWY do not allow VPC <=> VPC communication (Inter VPC), we need TGW
+- [ ] 1 Private VIF = 1 DX GWY & 10 VGW per DX GWY
+- [ ] 1 DX GWY can have 50 Private VIF’s == 50 DX GWY’s == 500 VPC’s
+- [ ] Each DX allows 1 Transit and 50 public or private VIFS
+- [ ] Each Transit VIF supports unto 3 TGWs
+- [ ] Very Important: A DX Gateway can be associated with either VGW’s & Private VIFs or TGW and Transit VIF but not BOTH
+- [ ] Jumbo frames over Transit VIF are 8500 MTU
+- [ ] A DX GWY can support up to 3 TGW, Conversely a TGW can support up to 20 DX GWY’s
+- [ ] A TGW support Max 20 DX GWY’s
+- [ ] A transit gateway supports IPv4 and IPv6 traffic by default. Peering transit gateways requires creating a static route on each transit gateway. Dynamic routing between peered transit gateways is not allowed.
+- [ ] For each TGW you can originate up to 20 Routes towards the on-premises environments.
+- [ ] Always ensure to provide redundancy to a DX connection (certainly be provisioning a second DX to another AWS DX location to provide redundancy for your infrastructure)
+- [ ] Each TGW supports 5000 attachments, 50 peering attachments (each peered TGW allows 5000 attachments)
+- [ ] LAG is Active/Active and Max of 4 connections per LAG.
+- [ ] LAG’s are about speed and not resilience, we have 2 X 100GB ports or 4 ports if under 100 GB. They all need to be of same speed. Terminate at the same location.
+- [ ] A LAG has ‘minimumLinks’ attribute - the LAG is active as long as this value or MORE connections are active.
+- [ ] AWS Private Link
+    - [ ] IPV4 and TCP only (IPV6 isn’t supported)
+    - [ ] HA via multiple endpoints
+    - [ ] Private DNS is supported (verified domains)
+    - [ ] Direct Connect, Site-to-Site VPN and VPC peering are supported
+- [ ] Gateway Endpoint is prefix list added to route table and Regional service (can’t access cross region). Also not accessible outside the VPC
+- [ ] Interface Endpoint is not HA by default, we can make it HA by adding it to each AZ
+- [ ] Interface Endpoint supports TCP and IPV4 only (very important)
+- [ ] Interface Endpoint uses Private Link
+- [ ] Private DNS overrides default DNS in Interface Endpoint (no routes)
+- [ ] SNS Cross-Account via Topic Policy
+- [ ] FIFO queues 300 messages per second and 3000 messages per second with batching
+- [ ] FIFO queue must have .fifo suffix
+- [ ] SQS uses extended client library to when handing messages with over SQS max 256KB (keyword: Java)
+- [ ] Delay Queues are not supported on FIFO
+- [ ] Amazon MQ is not a public service, so we need private networking for Amazon MQ
+- [ ] Lambda has Public and Private (VPC), treat Lambda running in a VPC as any other VPC resource (NAT GWY, VPC Endpoints)
+- [ ] Lambda has Resource Policies
+- [ ] Lambda Metrics go to CloudWatch (not CloudWatch logs) - such as success/failure, retires, latency.
+- [ ] CloudWatch Logs requires permission via Execution Role for Lambda to store CloudWatch logs
+- [ ] Lambda functions need to be idempotent reprocessing a result, should have the same end state.
+- [ ] Lambda Event Source Mapping read/poll from the stream and process as a batch
+- [ ] For Example: S3 event to Lambda,  Lambda doesn’t need access to S3 unless it needs to read more dataPermissions from the Lambda Execution Role are used by the Event Source Mapping to interact with the source. Similarly a stream from Kinesis Data Stream (Lambda Execution Role needs access to Kinesis Data Stream)
+- [ ] Lambda versions are IMMUTABLE, where as Aliases are MUTABLE
+- [ ] Lambda Provisioned (Cold and Warm starts) or Reserved concurrency
+- [ ] We can’t use $LATEST with ALIAS
+- [ ] When we publish a version, env variables are also immutable
+- [ ] Use Multi-Value headers when we use ALB and Lambda for multiple headers, ex: http://app.com?&param1=test&param2=user
+- [ ] API Cache
+    - [ ] Cache is defined per stage within API Gateway
+    - [ ] Cache TTL default is 300 seconds
+    - [ ] Configurable min 0 and max 3600s
+    - [ ] Can be encrypted
+    - [ ] Cache size 500MB to 237GB
+- [ ] API Gateway (REST API): To use SOAP API, we need to transform the request using mapping template
+- [ ] API Gateway stages are NOT IMMUTABLE (can be overwritten and rolled back)
+- [ ] Step Functions - Standard is default for 1 year and EXPRESS (IOT, Streaming, High Volume, mobile, app backends) is for 5 mins
+- [ ] SWF - Activity Task, Activity Worker and Decider (coordination over distributed components) - 1 year max runtime
+- [ ] SWF use cases
+    - [ ] “AWS Flow Framework“ - choose SWF
+    - [ ] “External Signals” to intervene in SWF
+    - [ ] “Launch child Flows” - return to parents
+    - [ ] Bespoke / Complex decisions
+    - [ ] Mechanical Turk 
+- [ ] Mechanical Turk - humans rather than ML (HITs)
+- [ ] Only custom origins in CloudFront can use Regional Edge Cache
+- [ ] TRUSTED SIGNER means private distribution in CloudFront. A CloudFront Key is created by an Account Root User.
+- [ ] CloudFront GEO Restriction - Whitelist or Blacklist - COUNTRY ONLY, applies to the entire distribution.
+- [ ] Third Party Geo Location (or anything except COUNTRY/COUNTRY CODE) - Completely Customisable (users, browsers or login state)
+- [ ] CMKs support rotation: AWS Managed Keys are always rotated once every 3 years. Where as CMK are optional, if enabled, they rotate once every year
