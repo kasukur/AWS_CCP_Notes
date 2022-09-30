@@ -8,5 +8,6 @@ The information has been taken from various sources during my preperation
 4. AWS Documentation
 5. AWS Exam Readiness - Live and Recorded 
 
+#### Determining the size of upload buffer to allocate
 
 ![WorkingStorageFormula-diagram.png](images/WorkingStorageFormula-diagram.png)
