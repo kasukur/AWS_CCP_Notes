@@ -7,6 +7,7 @@ The information has been taken from various sources during my preperation
 3. AWS Skill Builder - Advanced Architecting Course
 4. AWS Documentation
 5. AWS Exam Readiness - Live and Recorded 
+6. Images are from reInvent videos
 
 #### Determining the size of upload buffer to allocate
 
