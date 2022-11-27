@@ -4,6 +4,8 @@
 
 ## AWS Solution Architect Associate Notes
 
+## AWS Certified Developer Associate Notes
+
 ## AWS Solution Architect Professional Notes
 
 ## [AWS Workshops/Labs](https://start.me/p/1kjb2D/new-page)
