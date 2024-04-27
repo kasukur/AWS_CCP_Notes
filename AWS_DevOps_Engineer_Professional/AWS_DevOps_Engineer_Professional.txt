@@ -1,0 +1,158 @@
+Disclaimer:
+------------
+The information has been taken from various sources during my preperation
+1. AWS Documentation
+
+=-------------------------------------------=
+= AWS DevOps Engineer Professional Notes =
+=-------------------------------------------=
+
+AWS DevOps Engineer Professional Exam tests your hands on experience, So I highly recommend you to gain some hands on experience using the following workshops:
+* [Introduction to AWS Code Family](https://catalog.us-east-1.prod.workshops.aws/workshops/752fd04a-f7c3-49a0-a9a0-c9b5ed40061b/en-US)
+* [Building event-driven architectures on AWS](https://catalog.us-east-1.prod.workshops.aws/workshops/63320e83-6abc-493d-83d8-f822584fb3cb/en-US/)
+* [AWS CloudFormation Workshop](https://catalog.workshops.aws/cfn101/en-US)
+* [One Observability Workshop](https://catalog.workshops.aws/observability/en-US) - Focus on AWS CloudWatch
+
+- CodeCommit
+    - Use Case: Think about how a company would setup a code repository and all the developers would work on the same repository to perform code changes by using feature branches.
+    - How the code from the feature branches can be merged into master using Pull Requests after performing Code Reviews.
+
+- CodeArtifact
+    - AWS CodeArtifact is a secure, highly scalable, managed artifact repository service that helps organizations to store and share software packages for application development. You can use CodeArtifact with popular build tools and package managers such as the NuGet CLI, Maven, Gradle, npm, yarn, pip, and twine. CodeArtifact helps reduce the need for you to manage your own artifact storage system or worry about scaling its infrastructure. There are no limits on the number or total size of the packages that you can store in a CodeArtifact repository.
+      You can create a connection between your private CodeArtifact repository and an external, public repository, such as npmjs.com or Maven Central. CodeArtifact will then fetch and store packages on demand from the public repository when they're requested by a package manager. This makes it more convenient to consume open-source dependencies used by your application and helps ensure they're always available for builds and development. You can also publish private packages to a CodeArtifact repository. This helps you share proprietary software components between multiple applications and development teams in your organization.
+    - [Working with repositories in CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/repos.html)
+    - [Working with upstream repositories in CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html)
+    - [Working with packages in CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/packages.html)
+
+- CodeBuild: AWS CodeBuild is a fully managed build service in the cloud. CodeBuild compiles your source code, runs unit tests, and produces artifacts that are ready to deploy. 
+    - Uses a buildspec.yml file in the source code root directory.
+    - The build artifacts are stored in S3.
+    
+- CodeDeploy: CodeDeploy is a deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
+    - Uses a buildspec.yml file in the source code root directory.
+
+    - Predefined deployment configurations for an EC2/on-premises compute platform  (All-at-once, HalfAtATime and OneAtATime)
+        * CodeDeployDefault.AllAtOnce
+        * CodeDeployDefault.HalfAtATime
+        * CodeDeployDefault.OneAtATime
+
+    - Predefined deployment configurations for an EC2/on-premises compute platform  (Canary, Linear and All-at-once)
+        * CodeDeployDefault.ECSLinear10PercentEvery1Minutes
+        * CodeDeployDefault.ECSLinear10PercentEvery3Minutes
+        * CodeDeployDefault.ECSCanary10Percent5Minutes
+        * CodeDeployDefault.ECSCanary10Percent15Minutes
+        * CodeDeployDefault.ECSAllAtOnce
+
+    - Predefined deployment configurations for an AWS Lambda compute platform (Canary, Linear and All-at-once)
+        * CodeDeployDefault.LambdaCanary10Percent5Minutes
+        * CodeDeployDefault.LambdaCanary10Percent10Minutes
+        * CodeDeployDefault.LambdaCanary10Percent15Minutes
+        * CodeDeployDefault.LambdaCanary10Percent30Minutes
+        * CodeDeployDefault.LambdaLinear10PercentEvery1Minute
+        * CodeDeployDefault.LambdaLinear10PercentEvery2Minutes
+        * CodeDeployDefault.LambdaLinear10PercentEvery3Minutes
+        * CodeDeployDefault.LambdaLinear10PercentEvery10Minutes
+        * CodeDeployDefault.LambdaAllAtOnce
+
+    - You can use CloudWatch Alarms to track metrics on your new deployment and you can set thresholds for those metrics in your Auto Scaling groups being managed by CodeDeploy. This can invoke an action if the metric you are tracking crosses the threshold for a defined period of time. You can also monitor metrics such as instance CPU utilization, Memory utilization or custom metrics you have configured. If the alarm is activated, CloudWatch initiates actions such as sending a notification to Amazon Simple Notification Service, stopping a CodeDeploy deployment, or changing the state of an instance. You will also have the option to automatically roll back a deployment when a deployment fails or when a CloudWatch alarm is activated. CodeDeploy will redeploy the last known working version of the application when it rolls back.
+      With Amazon SNS, you can create triggers that send notifications to subscribers of an Amazon SNS topic when specified events, such as success or failure events, occur in deployments and instances. CloudWatch Alarms can trigger sending out notification to your configured SNS topic.
+
+- CodePipeline: AWS CodePipeline can pull source code for your pipeline directly from AWS CodeCommit, GitHub, Amazon ECR, or Amazon S3. It can run builds and unit tests in AWS CodeBuild. CodePipeline can deploy your changes using AWS CodeDeploy, AWS Elastic Beanstalk, Amazon Elastic Container Service (Amazon ECS), or AWS Fargate.
+
+    - In AWS CodePipeline, you can add an approval action to a stage in a pipeline at the point where you want the pipeline execution to stop so that someone with the required AWS Identity and Access Management permissions can approve or reject the action.
+      If the action is approved, the pipeline execution resumes. If the action is rejected—or if no one approves or rejects the action within seven days of the pipeline reaching the action and stopping—the result is the same as an action failing, and the pipeline execution does not continue.
+
+    - The following terms are used in CodePipeline:
+        * Pipelines
+        * Stages
+        * Actions
+        * Pipeline executions
+        * Stage operations
+        * Action executions
+        * Execution types
+        * Action types
+        * Transitions
+        * Artifacts
+        * Source revisions
+        * Triggers
+        * Variables
+        More information at https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts.html
+
+    - [Monitoring CodePipeline events](https://docs.aws.amazon.com/codepipeline/latest/userguide/detect-state-changes-cloudwatch-events.html)
+        – Specified pipelines or all your pipelines. You control this by using "detail-type": "CodePipeline Pipeline Execution State Change".
+        – Specified stages or all your stages, within a specified pipeline or all your pipelines. You control this by using "detail-type": "CodePipeline Stage Execution State Change".
+        – Specified actions or all actions, within a specified stage or all stages, within a specified pipeline or all your pipelines. You control this by using "detail-type": "CodePipeline Action Execution State Change".
+
+- Amazon CodeGuru helps improve code quality and automate code reviews by scanning and profiling your Java and Python applications. CodeGuru Reviewer can detect potential defects and bugs in your code. For instance, it recommends improvements regarding security vulnerabilities, resource leaks, concurrency issues, incorrect input validation, and deviation from AWS best practices.
+
+- Amazon CodeGuru Reviewer Secrets Detector is an automated tool that helps developers detect secrets in source code or configuration files, such as passwords, API keys, SSH keys, and access tokens. The detectors use machine learning (ML) to identify hardcoded secrets as part of the code review process, ensuring all new code doesn’t contain hardcoded secrets before being merged and deployed. In addition to Java and Python code, secrets detectors scan configuration and documentation files. CodeGuru Reviewer suggests remediation steps to secure secrets with AWS Secrets Manager, a managed service that lets you securely and automatically store, rotate, manage, and retrieve credentials, API keys, and all sorts of secrets.
+
+- CodeGuru Profiler is designed to enhance the performance of production applications and identify the most resource-intensive lines 
+
+- CloudFormation
+    - AWS CloudFormation StackSets extends the capability of stacks by enabling you to create, update, or delete stacks across multiple accounts and AWS Regions with a single operation. Using an administrator account, you define and manage an AWS CloudFormation template, and use the template as the basis for provisioning stacks into selected target accounts across specified AWS Regions. 
+    - Nested stacks are stacks created as part of other stacks. You create a nested stack within another stack by using the AWS::CloudFormation::Stack resource.
+      As your infrastructure grows, common patterns can emerge in which you declare the same components in multiple templates. You can separate out these common components and create dedicated templates for them. Then use the resource in your template to reference other templates, creating nested stacks.
+        
+      For example, assume that you have a load balancer configuration that you use for most of your stacks. Instead of copying and pasting the same configurations into your templates, you can create a dedicated template for the load balancer. Then, you just use the resource to reference that template from within other templates.
+      Nested stacks can themselves contain other nested stacks, resulting in a hierarchy of stacks, as in the diagram below. The root stack is the top-level stack to which all the nested stacks ultimately belong. In addition, each nested stack has an immediate parent stack. For the first level of nested stacks, the root stack is also the parent stack. in the diagram below, for example:
+        * Stack A is the root stack for all the other, nested, stacks in the hierarchy.
+        * For stack B, stack A is both the parent stack, and the root stack.
+        * For stack D, stack C is the parent stack; while for stack C, stack B is the parent stack.
+    - Custom resources enable you to write custom provisioning logic in templates that AWS CloudFormation runs anytime you create, update (if you changed the custom resource), or delete stacks. For example, you might want to include resources that aren’t available as AWS CloudFormation resource types. You can include those resources by using custom resources. That way, you can still manage all your related resources in a single stack.
+      Use the AWS::CloudFormation::CustomResource or, alternatively, the Custom::<User-Defined Resource Name> resource type to define custom resources in your templates. Custom resources require one property: the service token, which specifies where AWS CloudFormation sends requests to, such as an Amazon SNS topic.
+    - Custom resources enable users to write custom provisioning logic in templates that AWS CloudFormation runs anytime a user creates, updates (if the custom resource has been changed), or deletes stacks. For instance, a user might want to include resources that are not available as AWS CloudFormation resource types. Users can include those resources by using custom resources. That way, users can still manage all related resources in a single stack.
+      If a custom resource is used to invoke a Lambda function in AWS CloudFormation, the request will include a pre-signed URL. The Lambda function is responsible for returning a response to the pre-signed URL to indicate if the resource creation was successful or not. If the Lambda function fails to respond to the pre-signed URL, the CloudFormation stack will remain in the CREATE_IN_PROGRESS state and wait for a response.
+
+- [ ] IAM
+    *  [Cross Account Access](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html)
+    *  [Assuming Role](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html)
+    *  [Service Role](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html)
+    *  [PassRole](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html)
+    *  [Identity-based policies and resource-based policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html)
+    *  [Working with IAM policy conditions](https://catalog.us-east-1.prod.workshops.aws/workshops/6dc3124a-6bd4-46eb-b5c4-be438a82ba3d/en-US/40-hands-on-labs/lab5)
+
+- AWS Organizations and Service Control Policies (SCP)
+    - [Tutorial: Creating and configuring an organization](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tutorials_basic.html)
+    - [Tutorial: Monitor important changes to your organization with Amazon EventBridge](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tutorials_cwe.html)
+
+- AWS Control Tower
+    - AWS Control Tower is something that we can't practice using a personal account, so the best option is to read use cases from blog or documentation.
+
+- AWS Config
+    - AWS Config is to assess, audit, and evaluate configurations of your resources.
+    - AWS Config allows you to remediate noncompliant resources that are evaluated by AWS Config Rules. AWS Config applies remediation using AWS Systems Manager Automation documents. These documents define the actions to be performed on noncompliant AWS resources evaluated by AWS Config Rules. You can associate SSM documents by using AWS Management Console or by using APIs.
+
+- DynamoDB
+    - Amazon DynamoDB global tables is a fully managed, serverless, multi-Region, and multi-active database. Global tables provide you 99.999% availability, increased application resiliency, and improved business continuity. As global tables replicate your Amazon DynamoDB tables automatically across your choice of AWS Regions, you can achieve fast, local read and write performance.
+    - A DynamoDB global table is comprised of multiple replica tables. Each replica table exists in a different Region, but all replicas have the same name and primary key. When data is written to any replica table, DynamoDB automatically replicates that data to all other replica tables in the global table. Global tables enable the users of your application to have low-latency access to the data no matter where they are located. In the unlikely event that one AWS Region was to become temporarily unavailable, your customers can still access the replica tables in the other Regions.
+
+- DR
+    - Use DB replicas for a lower RPO instead of backups for multi region.
+
+- SSM    
+    - AWS-ApplyPatchBaseline SSM document supports patching on Windows instances only and doesn't support Linux instances. Apply patch baselines using the AWS-RunPatchBaseline SSM document.
+
+- AWS Firewall Manager offers the freedom to use multiple AWS accounts and to host applications in any desired region while maintaining centralized control over their organization’s security settings and profile. Developers can develop and innovators can innovate, while the security team gains the ability to respond quickly, uniformly, and globally to potential threats and actual attacks.
+  Firewall Manager is built around named policies that contain WAF rule sets and optional AWS Shield advanced protection. Each policy applies to a specific set of AWS resources, specified by account, resource type, resource identifier, or tag. Policies can be applied automatically to all matching resources, or to a subset that you select. Policies can include WAF rules drawn from within the organization, and also those created by AWS Partners such as Imperva, F5, Trend Micro, and other AWS Marketplace vendors. This gives your security team the power to duplicate their existing on-premises security posture in the cloud.
+    
+  Firewall Manager has three prerequisites:
+    - AWS Organizations – Your organization must be using AWS Organizations to manage your accounts and all features must be enabled.
+    - Firewall Administrator – You must designate one of the AWS accounts in your organization as the administrator for Firewall Manager. This gives the account permission to deploy AWS WAF rules across the organization.
+    - AWS Config – You must enable AWS Config for all of the accounts in the Organization so that Firewall Manager can detect newly created resources.    
+
+- Lambda
+    In Lambda, concurrency is the number of in-flight requests that your function is currently handling. There are two types of concurrency controls available:
+        - Reserved concurrency – This represents the maximum number of concurrent instances allocated to your function. When a function has reserved concurrency, no other function can use that concurrency. Configuring reserved concurrency for a function incurs no additional charges.
+        - Provisioned concurrency – This is the number of pre-initialized execution environments allocated to your function. These execution environments are ready to respond immediately to incoming function requests. Configuring provisioned concurrency incurs additional charges to your AWS account.
+
+- Auto Scaling
+    - If the Terminate process is suspended, your Auto Scaling group does not scale in for alarms or scheduled actions that occur. While the Terminate process is suspended and the AZRebalance process is still active then AZRebalance will not function properly. AZRebalance will be able to launch new instances without terminating the old ones. This could cause your Auto Scaling group to grow up to 10 percent larger than its maximum size because this is allowed temporarily during rebalancing activities.
+
+- Amazon Inspector is an automated security assessment service that helps improve the security and compliance of applications deployed on AWS. Amazon Inspector automatically assesses applications for exposure, vulnerabilities, and deviations from best practices. After performing an assessment, Amazon Inspector produces a detailed list of security findings prioritized by level of severity. These findings can be reviewed directly or as part of detailed assessment reports, which are available via the Amazon Inspector console or API.
+  Amazon Inspector security assessments help you check for unintended network accessibility of your Amazon EC2 instances and for vulnerabilities on those EC2 instances. Amazon Inspector assessments are offered to you as pre-defined rules packages mapped to common security best practices and vulnerability definitions. Examples of built-in rules include checking for access to your EC2 instances from the internet, remote root login being enabled, or vulnerable software versions installed. These rules are regularly updated by AWS security researchers.
+
+- AWS WAF is a web application firewall that helps protect your web applications from common web exploits that could affect application availability, compromise security, or consume excessive resources. With AWS Config, you can track changes to WAF web access control lists (web ACLs). For example, you can record the creation and deletion of rules and rule actions, as well as updates to WAF rule configurations.
+
+- AWS Secrets Manager is an AWS service that makes it easier for you to manage secrets. Secrets can be database credentials, passwords, third-party API keys, and even arbitrary text. You can store and control access to these secrets centrally by using the Secrets Manager console, the Secrets Manager command line interface (CLI), or the Secrets Manager API and SDKs.
+  The difference between Secrets Manager and the Parameter Store is the secrets manager can rotate the secrets.
