@@ -1,4 +1,4 @@
-# AWS Certified Security - Specialty Study Guide
+# AWS Certified Security - Specialty Study Guide and Notes
 
 ## Introduction
 
